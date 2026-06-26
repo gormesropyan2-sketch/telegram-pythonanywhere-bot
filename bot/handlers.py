@@ -54,10 +54,15 @@ def cmd_fact(message):
     reply = ask_ai(message.from_user.id, "Tell me an interesting fact in football")
     bot.send_message(message.chat.id, reply)
 
-@bot.message_handler(commands=["wc"], func=is_allowed)
+@bot.message_handler(commands=["ucl"], func=is_allowed)
 def cmd_wc(message):
-    prompt = "Tell me the results of the last 5 matches played in the 2026 World Cup"
+    prompt = "You say last games in a semifinals and finals UCL"
     reply = ask_ai(message.from_user.id, prompt)
+    bot.send_message(message.chat.id, reply)
+
+@bot.message_handler(commands=["wc"], func=is_allowed)
+def cmd_fact(message):
+    reply = ask_ai(message.from_user.id, "say who win WC and say who win best player in tournament and who score most goal and say best goalkeeper and say who bast younger player")
     bot.send_message(message.chat.id, reply)
 
 @bot.message_handler(commands=["roll"], func=is_allowed)
@@ -105,13 +110,13 @@ def cmd_help(message):
         "/start — welcome message",
         "/help  — show this message",
         "/reset — clear conversation history",
-        
         "/joke - say a football joke",
         "/fact - say a fooball fact",
         "/roll - say a random football club",
         "/remember - tell and the program will remember",
         "/recall - will say what he remembered",
-        "/wc - will tell the last 5matches of the wc",
+        "/ucl - will tell the last semifinals and finals in UCL",
+        "/wc -will tell best player,who most score goal,best gk,best younger player in WC"
     ]
     if HF_SPACE_ID:
         lines.append("/model — switch AI provider")
