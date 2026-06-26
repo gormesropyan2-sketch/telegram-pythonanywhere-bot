@@ -44,6 +44,52 @@ def _log(message, direction: str, text: str) -> None:
     ts = datetime.now().strftime("%H:%M:%S")
     print(f"[{ts}] {sender} → {receiver}: {snippet}", flush=True)
 
+@bot.message_handler(commands=["joke"], func=is_allowed)
+def cmd_joke(message):
+    reply = ask_ai(message.from_user.id, "Tell one short, clean football joke.")
+    bot.send_message(message.chat.id, reply)
+
+@bot.message_handler(commands=["fact"], func=is_allowed)
+def cmd_fact(message):
+    reply = ask_ai(message.from_user.id, "Tell me an interesting fact in football")
+    bot.send_message(message.chat.id, reply)
+
+@bot.message_handler(commands=["wc"], func=is_allowed)
+def cmd_wc(message):
+    prompt = "Tell me the results of the last 5 matches played in the 2026 World Cup"
+    reply = ask_ai(message.from_user.id, prompt)
+    bot.send_message(message.chat.id, reply)
+
+@bot.message_handler(commands=["roll"], func=is_allowed)
+def cmd_fact(message):
+    reply = ask_ai(message.from_user.id, "Tell me a football club,but different one each time")
+    bot.send_message(message.chat.id, reply)
+
+@bot.message_handler(commands=["remember"], func=is_allowed)
+def cmd_remember(message):
+    parts = message.text.split(maxsplit=1)
+    note = parts[1] if len(parts) > 1 else ""
+    
+    if not note:
+        bot.send_message(message.chat.id, "Please provide a note to remember! Example: /remember Buy milk")
+        return
+
+    
+    store.set(f"note:{message.from_user.id}", note)
+    bot.send_message(message.chat.id, "Saved!")
+
+@bot.message_handler(commands=["recall"], func=is_allowed)
+def cmd_recall(message):
+    note = store.get(f"note:{message.from_user.id}")
+    
+    if note:
+        if isinstance(note, bytes):
+            note = note.decode('utf-8')
+        bot.send_message(message.chat.id, f"Here is what I remembered:\n{note}")
+    else:
+        bot.send_message(message.chat.id, "I don't have any saved notes for you!")
+
+
 
 @bot.message_handler(commands=["start"], func=is_allowed)
 def cmd_start(message):
@@ -59,7 +105,13 @@ def cmd_help(message):
         "/start — welcome message",
         "/help  — show this message",
         "/reset — clear conversation history",
-        "/about — about this bot",
+        
+        "/joke - say a football joke",
+        "/fact - say a fooball fact",
+        "/roll - say a random football club",
+        "/remember - tell and the program will remember",
+        "/recall - will say what he remembered",
+        "/wc - will tell the last 5matches of the wc",
     ]
     if HF_SPACE_ID:
         lines.append("/model — switch AI provider")
