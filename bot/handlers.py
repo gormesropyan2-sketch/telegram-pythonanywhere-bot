@@ -55,14 +55,37 @@ def cmd_fact(message):
     bot.send_message(message.chat.id, reply)
 
 @bot.message_handler(commands=["ucl"], func=is_allowed)
-def cmd_wc(message):
-    prompt = "You say last games in a semifinals and finals UCL"
+def cmd_ucl(message):
+    # Ստանում ենք հրամանի արգումենտները
+    args = message.text.split()
+    
+    # Եթե տարեթիվը կամ մրցաշրջանը նշված է (օրինակ՝ /ucl 2024)
+    if len(args) > 1:
+        season = args[1]
+        prompt = f"You say last games in semifinals and finals of {season} UCL"
+    else:
+        # Եթե տարեթիվ չի նշվել, հարցնում ենք վերջին արդիական խաղերի մասին
+        prompt = "You say last games in semifinals and finals of the latest UCL tournament"
+
     reply = ask_ai(message.from_user.id, prompt)
     bot.send_message(message.chat.id, reply)
 
 @bot.message_handler(commands=["wc"], func=is_allowed)
 def cmd_fact(message):
-    reply = ask_ai(message.from_user.id, "say who win WC and say who win best player in tournament and who score most goal and say best goalkeeper and say who bast younger player")
+    # Ստանում ենք հրամանի արգումենտները
+    args = message.text.split()
+    
+    # Եթե տարեթիվը նշված է (օրինակ՝ /wc 2014)
+    if len(args) > 1:
+        year = args[1]
+    else:
+        # Եթե ուղղակի գրել է /wc, դնում ենք վերջին հայտնի WC տարեթիվը (օրինակ՝ 2022)
+        year = "2022"
+        
+    # Դինամիկ կերպով տեղադրում ենք տարեթիվը հարցման մեջ
+    prompt = f"say who won {year} WC and say who won best player in tournament and who score most goal and say best goalkeeper and say who best younger player"
+
+    reply = ask_ai(message.from_user.id, prompt)
     bot.send_message(message.chat.id, reply)
 
 @bot.message_handler(commands=["roll"], func=is_allowed)
@@ -115,8 +138,8 @@ def cmd_help(message):
         "/roll - say a random football club",
         "/remember - tell and the program will remember",
         "/recall - will say what he remembered",
-        "/ucl - will tell the last semifinals and finals in UCL",
-        "/wc -will tell best player,who most score goal,best gk,best younger player in WC"
+        "/ucl - you say UCL year, and I,ll tell the last semifinals and finals in UCL",
+        "/wc -You say World cup year, and I'll tell you who the win Wc,who the best player,who the most score goal,who the best gk,who the best younger player in WC"
     ]
     if HF_SPACE_ID:
         lines.append("/model — switch AI provider")
